@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: ent-info
+  profiles:
+    active: dev
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
