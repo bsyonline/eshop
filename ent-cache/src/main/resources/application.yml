@@ -21,3 +21,12 @@ spring:
         - 192.168.67.201:5000
         - 192.168.67.202:5000
         - 192.168.67.203:5000
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      ack-mode: manual
+    topic: ent_rebuild_cache
