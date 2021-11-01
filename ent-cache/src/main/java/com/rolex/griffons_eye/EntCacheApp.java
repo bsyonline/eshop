@@ -13,8 +13,8 @@ import org.springframework.cache.annotation.EnableCaching;
  */
 @SpringBootApplication
 @EnableCaching
-public class EshopCacheApp {
+public class EntCacheApp {
     public static void main(String[] args) {
-        SpringApplication.run(EshopCacheApp.class, args);
+        SpringApplication.run(EntCacheApp.class, args);
     }
 }

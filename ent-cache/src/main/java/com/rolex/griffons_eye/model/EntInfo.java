@@ -13,6 +13,5 @@ import lombok.Data;
 public class EntInfo {
     Long id;
     String entId;
-    String name;
-    Double price;
+    String entName;
 }

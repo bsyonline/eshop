@@ -3,6 +3,7 @@
  */
 package com.rolex.griffons_eye.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rolex.griffons_eye.model.EntInfo;
 import com.rolex.griffons_eye.service.CacheService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class CacheController {
     CacheService cacheService;
 
     @GetMapping("/getEntInfo")
-    public EntInfo entInfo(String entId) {
+    public EntInfo entInfo(String entId) throws JsonProcessingException {
         EntInfo entInfo = null;
 
         entInfo = cacheService.getProductInfoFromRedisCache(entId);

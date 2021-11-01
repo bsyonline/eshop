@@ -3,6 +3,7 @@
  */
 package com.rolex.griffons_eye.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rolex.griffons_eye.model.EntInfo;
 
 /**
@@ -28,11 +29,11 @@ public interface CacheService {
      * 从redis中获取商品信息
      * @param entId
      */
-    EntInfo getProductInfoFromRedisCache(String entId);
+    EntInfo getProductInfoFromRedisCache(String entId) throws JsonProcessingException;
 
     /**
      * 将商品信息保存到redis中
      * @param entInfo
      */
-    void saveProductInfo2RedisCache(EntInfo entInfo);
+    void saveProductInfo2RedisCache(EntInfo entInfo) throws JsonProcessingException;
 }
