@@ -16,7 +16,7 @@ public interface CacheService {
      * 将商品信息保存到本地的ehcache缓存中
      * @param entInfo
      */
-    EntInfo saveProductInfo2LocalCache(EntInfo entInfo);
+    EntInfo saveEntInfo2LocalCache(EntInfo entInfo);
 
     /**
      * 从本地ehcache缓存中获取商品信息

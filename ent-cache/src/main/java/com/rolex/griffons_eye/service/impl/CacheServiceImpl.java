@@ -39,7 +39,7 @@ public class CacheServiceImpl implements CacheService {
      */
     @Override
     @CachePut(value = CACHE_NAME, key = "'key_' + #productInfo.getId()")
-    public EntInfo saveProductInfo2LocalCache(EntInfo entInfo) {
+    public EntInfo saveEntInfo2LocalCache(EntInfo entInfo) {
         return entInfo;
     }
 

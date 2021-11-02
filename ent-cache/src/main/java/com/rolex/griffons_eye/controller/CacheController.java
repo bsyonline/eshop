@@ -5,6 +5,7 @@ package com.rolex.griffons_eye.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rolex.griffons_eye.model.EntInfo;
+import com.rolex.griffons_eye.queue.RebuildCacheQueue;
 import com.rolex.griffons_eye.service.CacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,12 +39,12 @@ public class CacheController {
 
         if(entInfo == null) {
             // 就需要从数据源重新拉取数据，重建缓存
-//            GetProductInfoCommand command = new GetProductInfoCommand(productId);
-//            productInfo = command.execute();
+//            GetEntInfoCommand command = new GetEntInfoCommand(entId);
+//            entInfo = command.execute();
 
             // 将数据推送到一个内存队列中
-//            RebuildCacheQueue rebuildCacheQueue = RebuildCacheQueue.getInstance();
-//            rebuildCacheQueue.putProductInfo(productInfo);
+            RebuildCacheQueue rebuildCacheQueue = RebuildCacheQueue.getInstance();
+            rebuildCacheQueue.putEntInfo(entInfo);
         }
 
         return entInfo;

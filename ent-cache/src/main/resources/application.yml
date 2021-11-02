@@ -22,7 +22,7 @@ spring:
         - 192.168.67.202:5000
         - 192.168.67.203:5000
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: 192.168.67.201:9092,192.168.67.202:9092,192.168.67.203:9092
     consumer:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -31,6 +31,6 @@ spring:
       ack-mode: manual
     topic: ent_rebuild_cache
   zookeeper:
-    url: 127.0.0.1:2181
+    url: 192.168.67.201:2181,192.168.67.202:2181,192.168.67.203:2181
     timeout: 1000
     retry: 3

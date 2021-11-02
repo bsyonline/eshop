@@ -76,7 +76,6 @@ public class EntInfoChangedEventConsumer {
                     return;
                 }
                 log.info("current date[{}] is after existed date[{}]", entInfo.getModifiedTime(), entInfoFromRedisCache.getModifiedTime());
-
             } else {
                 log.info("existed ent info is null");
             }
@@ -85,9 +84,8 @@ public class EntInfoChangedEventConsumer {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
             // 将企业信息放到ehcache缓存
-            cacheService.saveProductInfo2LocalCache(entInfo);
+            cacheService.saveEntInfo2LocalCache(entInfo);
             log.info("save ent info to local cache");
             // 将企业信息放到redis缓存
             cacheService.saveEntInfo2RedisCache(entInfo);
