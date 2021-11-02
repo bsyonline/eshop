@@ -24,7 +24,7 @@ public class CacheController {
     public EntInfo entInfo(String entId) throws JsonProcessingException {
         EntInfo entInfo = null;
 
-        entInfo = cacheService.getProductInfoFromRedisCache(entId);
+        entInfo = cacheService.getEntInfoFromRedisCache(entId);
         if (entInfo != null) {
             System.out.println("=================从redis中获取缓存，ent信息=" + entInfo);
         }

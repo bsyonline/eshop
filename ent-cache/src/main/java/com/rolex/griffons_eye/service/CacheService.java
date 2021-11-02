@@ -29,11 +29,11 @@ public interface CacheService {
      * 从redis中获取商品信息
      * @param entId
      */
-    EntInfo getProductInfoFromRedisCache(String entId) throws JsonProcessingException;
+    EntInfo getEntInfoFromRedisCache(String entId) throws JsonProcessingException;
 
     /**
      * 将商品信息保存到redis中
      * @param entInfo
      */
-    void saveProductInfo2RedisCache(EntInfo entInfo) throws JsonProcessingException;
+    void saveEntInfo2RedisCache(EntInfo entInfo) throws JsonProcessingException;
 }

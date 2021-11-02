@@ -30,3 +30,7 @@ spring:
     listener:
       ack-mode: manual
     topic: ent_rebuild_cache
+  zookeeper:
+    url: 127.0.0.1:2181
+    timeout: 1000
+    retry: 3

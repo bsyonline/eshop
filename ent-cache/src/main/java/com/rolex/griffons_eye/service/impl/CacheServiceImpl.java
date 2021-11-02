@@ -59,7 +59,7 @@ public class CacheServiceImpl implements CacheService {
      * @param entId
      */
     @Override
-    public EntInfo getProductInfoFromRedisCache(String entId) throws JsonProcessingException {
+    public EntInfo getEntInfoFromRedisCache(String entId) throws JsonProcessingException {
         String key = PREFIX + entId;
         String s = redisDao.get(key);
         if (StringUtils.isEmpty(s)) {
@@ -79,7 +79,7 @@ public class CacheServiceImpl implements CacheService {
      * @param entInfo
      */
     @Override
-    public void saveProductInfo2RedisCache(EntInfo entInfo) throws JsonProcessingException {
+    public void saveEntInfo2RedisCache(EntInfo entInfo) throws JsonProcessingException {
         String key = PREFIX + entInfo.getEntId();
         ObjectMapper mapper = new ObjectMapper();
         JavaTimeModule module = new JavaTimeModule();

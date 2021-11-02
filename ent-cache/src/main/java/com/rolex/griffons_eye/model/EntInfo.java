@@ -5,6 +5,8 @@ package com.rolex.griffons_eye.model;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author rolex
  * @since 2021
@@ -14,4 +16,5 @@ public class EntInfo {
     Long id;
     String entId;
     String entName;
+    Date modifiedTime;
 }
