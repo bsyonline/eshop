@@ -49,7 +49,9 @@ public class CacheController {
 //            entInfo = command.execute();
 
             entInfo = new EntInfo();
-            SimpleDateFormat sdf = new SimpleDateFormat();
+            entInfo.setEntId("2");
+            entInfo.setEntName("test");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             try {
                 Date date = sdf.parse("2021-11-03 00:00:01");
                 entInfo.setModifiedTime(date);
