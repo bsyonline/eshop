@@ -20,6 +20,8 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -39,7 +41,7 @@ public class EntInfoChangedEventConsumer {
 
     @KafkaListener(groupId = "group01", topics = "#{'${spring.kafka.topic}'}")
     public void receive(ConsumerRecord<String, Object> record, Acknowledgment ack) throws JsonProcessingException {
-        log.info("收到消息：{}", record.value());
+        log.info("received msg: {}", record.value());
         // 首先将message转换成json对象
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(String.valueOf(record.value()));
@@ -57,27 +59,37 @@ public class EntInfoChangedEventConsumer {
         // 提取出企业id
         String entId = jsonNode.path("entId").asText();
         // 从企业信息服务获取最新的企业信息
-        EntInfo entInfo = getEntInfo(entId);
+        EntInfo entInfo = new EntInfo();
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        try {
+            Date date = sdf.parse("2021-11-03 00:00:00");
+            entInfo.setModifiedTime(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+//        EntInfo entInfo = getEntInfo(entId);
+        log.info("get ent info from ent service, entInfo={}", entInfo);
 
         // 获取分布式锁
         String lockPath = "/ent-lock-" + entId;
         InterProcessMutex lock = new InterProcessMutex(client, lockPath);
         try {
             lock.acquire();
+            log.info("acquire lock in kafka consumer, entId={}", entInfo.getEntId());
             // 先从redis中获取数据
             EntInfo entInfoFromRedisCache = cacheService.getEntInfoFromRedisCache(entId);
+            log.info("get ent info from redis cache, entInfo={}", entInfo);
             if (entInfoFromRedisCache != null) {
                 // 比较当前数据的时间版本比已有数据的时间版本是新还是旧
                 Date date = entInfo.getModifiedTime();
                 Date existedDate = entInfoFromRedisCache.getModifiedTime();
-
                 if (date.before(existedDate)) {
-                    log.info("current date[{}] is before existed date[{}]", entInfo.getModifiedTime(), entInfoFromRedisCache.getModifiedTime());
+                    log.info("current date[{}] is before existed date[{}], entId={}", entInfo.getModifiedTime(), entInfoFromRedisCache.getModifiedTime(), entInfo.getEntId());
                     return;
                 }
-                log.info("current date[{}] is after existed date[{}]", entInfo.getModifiedTime(), entInfoFromRedisCache.getModifiedTime());
+                log.info("current date[{}] is after existed date[{}], entId={}", entInfo.getModifiedTime(), entInfoFromRedisCache.getModifiedTime(), entInfo.getEntId());
             } else {
-                log.info("existed ent info is null");
+                log.info("existed ent info is null, entId={}", entInfo.getEntId());
             }
             try {
                 Thread.sleep(10 * 1000);
@@ -86,16 +98,17 @@ public class EntInfoChangedEventConsumer {
             }
             // 将企业信息放到ehcache缓存
             cacheService.saveEntInfo2LocalCache(entInfo);
-            log.info("save ent info to local cache");
+            log.info("save ent info to local cache in kafka consumer, entId={}", entInfo.getEntId());
             // 将企业信息放到redis缓存
             cacheService.saveEntInfo2RedisCache(entInfo);
-            log.info("save ent info to redis cache");
+            log.info("save ent info to redis cache in kafka consumer, entId={}", entInfo.getEntId());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             // 释放分布式锁
             try {
                 lock.release();
+                log.info("release lock in kafka consumer, entId={}", entInfo.getEntId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
