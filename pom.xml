@@ -12,6 +12,8 @@
         <module>ent-cache</module>
         <module>ent-info</module>
         <module>nginx-mock</module>
+        <module>ent-flink</module>
+        <module>ent-storm</module>
     </modules>
 
     <properties>
