@@ -12,7 +12,6 @@ import org.springframework.cache.annotation.EnableCaching;
  * @since 2021
  */
 @SpringBootApplication
-@EnableCaching
 public class EntCacheApp {
     public static void main(String[] args) {
         SpringApplication.run(EntCacheApp.class, args);
