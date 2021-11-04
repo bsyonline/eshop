@@ -47,6 +47,7 @@ public class EntInfoChangedEventConsumer {
         JsonNode jsonNode = mapper.readTree(String.valueOf(record.value()));
         // 从这里提取出消息对应的服务的标识
         String serviceId = jsonNode.path("serviceId").asText();
+        log.info("serviceId={}", serviceId);
         // 如果是企业信息服务
         if ("ent-info".equals(serviceId)) {
             processEntInfoChangedMessage(jsonNode);
@@ -60,7 +61,9 @@ public class EntInfoChangedEventConsumer {
         String entId = jsonNode.path("entId").asText();
         // 从企业信息服务获取最新的企业信息
         EntInfo entInfo = new EntInfo();
-        SimpleDateFormat sdf = new SimpleDateFormat();
+        entInfo.setEntId("2");
+        entInfo.setEntName("test");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             Date date = sdf.parse("2021-11-03 00:00:00");
             entInfo.setModifiedTime(date);
@@ -78,7 +81,7 @@ public class EntInfoChangedEventConsumer {
             log.info("acquire lock in kafka consumer, entId={}", entInfo.getEntId());
             // 先从redis中获取数据
             EntInfo entInfoFromRedisCache = cacheService.getEntInfoFromRedisCache(entId);
-            log.info("get ent info from redis cache, entInfo={}", entInfo);
+            log.info("get ent info from redis cache, entInfo={}", entInfoFromRedisCache);
             if (entInfoFromRedisCache != null) {
                 // 比较当前数据的时间版本比已有数据的时间版本是新还是旧
                 Date date = entInfo.getModifiedTime();

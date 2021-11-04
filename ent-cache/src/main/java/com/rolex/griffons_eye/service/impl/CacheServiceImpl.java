@@ -12,6 +12,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.rolex.griffons_eye.dao.RedisDao;
 import com.rolex.griffons_eye.model.EntInfo;
 import com.rolex.griffons_eye.service.CacheService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,6 +27,7 @@ import java.time.format.DateTimeFormatter;
  * @since 2021
  */
 @Service
+@Slf4j
 public class CacheServiceImpl implements CacheService {
     private static final String CACHE_NAME = "local";
     private static final String PREFIX = "ent:info:";
@@ -38,7 +40,7 @@ public class CacheServiceImpl implements CacheService {
      * @param entInfo
      */
     @Override
-    @CachePut(value = CACHE_NAME, key = "'key_' + #productInfo.getId()")
+    @CachePut(value = CACHE_NAME, key = "'key_' + #entInfo.getEntId()")
     public EntInfo saveEntInfo2LocalCache(EntInfo entInfo) {
         return entInfo;
     }
@@ -49,7 +51,7 @@ public class CacheServiceImpl implements CacheService {
      * @return
      */
     @Override
-    @Cacheable(value = CACHE_NAME, key = "'key_'+#id")
+    @Cacheable(value = CACHE_NAME, key = "'key_'+#entId")
     public EntInfo getProductInfoFromLocalCache(String entId) {
         return null;
     }
@@ -62,6 +64,7 @@ public class CacheServiceImpl implements CacheService {
     public EntInfo getEntInfoFromRedisCache(String entId) throws JsonProcessingException {
         String key = PREFIX + entId;
         String s = redisDao.get(key);
+        log.info("ent info json : {}", s);
         if (StringUtils.isEmpty(s)) {
             return null;
         }
@@ -87,6 +90,8 @@ public class CacheServiceImpl implements CacheService {
         module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         mapper.registerModule(module);
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        redisDao.set(key, mapper.writeValueAsString(entInfo));
+        String value = mapper.writeValueAsString(entInfo);
+        log.info("ent info json : {}", value);
+        redisDao.set(key, value);
     }
 }
