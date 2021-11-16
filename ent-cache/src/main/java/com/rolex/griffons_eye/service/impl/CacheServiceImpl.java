@@ -10,6 +10,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.rolex.griffons_eye.dao.RedisDao;
+import com.rolex.griffons_eye.hystrix.command.QueryEntInfoFromRedisCommand;
+import com.rolex.griffons_eye.hystrix.command.SaveEntInfo2RedisCommand;
 import com.rolex.griffons_eye.model.EntInfo;
 import com.rolex.griffons_eye.service.CacheService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +32,7 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 public class CacheServiceImpl implements CacheService {
     private static final String CACHE_NAME = "local";
-    private static final String PREFIX = "ent:info:";
+    public static final String PREFIX = "ent:info:";
 
     @Autowired
     RedisDao redisDao;
@@ -61,20 +63,9 @@ public class CacheServiceImpl implements CacheService {
      * @param entId
      */
     @Override
-    public EntInfo getEntInfoFromRedisCache(String entId) throws JsonProcessingException {
-        String key = PREFIX + entId;
-        String s = redisDao.get(key);
-        log.info("ent info json : {}", s);
-        if (StringUtils.isEmpty(s)) {
-            return null;
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        JavaTimeModule module = new JavaTimeModule();
-        module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        mapper.registerModule(module);
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        return mapper.readValue(s, EntInfo.class);
+    public EntInfo getEntInfoFromRedisCache(String entId) {
+        QueryEntInfoFromRedisCommand queryEntInfoFromRedisCommand = new QueryEntInfoFromRedisCommand(redisDao, entId);
+        return queryEntInfoFromRedisCommand.execute();
     }
 
     /**
@@ -83,15 +74,7 @@ public class CacheServiceImpl implements CacheService {
      */
     @Override
     public void saveEntInfo2RedisCache(EntInfo entInfo) throws JsonProcessingException {
-        String key = PREFIX + entInfo.getEntId();
-        ObjectMapper mapper = new ObjectMapper();
-        JavaTimeModule module = new JavaTimeModule();
-        module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        mapper.registerModule(module);
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        String value = mapper.writeValueAsString(entInfo);
-        log.info("ent info json : {}", value);
-        redisDao.set(key, value);
+        SaveEntInfo2RedisCommand saveEntInfo2RedisCommand = new SaveEntInfo2RedisCommand(redisDao, entInfo);
+        saveEntInfo2RedisCommand.execute();
     }
 }

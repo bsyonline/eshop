@@ -4,6 +4,7 @@
 package com.rolex.griffons_eye.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.rolex.griffons_eye.hystrix.command.QueryEntInfoCommand;
 import com.rolex.griffons_eye.model.EntInfo;
 import com.rolex.griffons_eye.queue.RebuildCacheQueue;
 import com.rolex.griffons_eye.service.CacheService;
@@ -11,10 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * @author rolex
@@ -29,9 +26,7 @@ public class CacheController {
 
     @GetMapping("/getEntInfo")
     public EntInfo entInfo(String entId) throws JsonProcessingException {
-        EntInfo entInfo = null;
-
-        entInfo = cacheService.getEntInfoFromRedisCache(entId);
+        EntInfo entInfo = cacheService.getEntInfoFromRedisCache(entId);
         if (entInfo != null) {
             log.info("get ent info from redis cache, entInfo={}", entInfo);
         }
@@ -43,21 +38,10 @@ public class CacheController {
             }
         }
 
-        if(entInfo == null) {
+        if (entInfo == null) {
             // 就需要从数据源重新拉取数据，重建缓存
-//            GetEntInfoCommand command = new GetEntInfoCommand(entId);
-//            entInfo = command.execute();
-
-            entInfo = new EntInfo();
-            entInfo.setEntId("2");
-            entInfo.setEntName("test");
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            try {
-                Date date = sdf.parse("2021-11-03 00:00:01");
-                entInfo.setModifiedTime(date);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            QueryEntInfoCommand command = new QueryEntInfoCommand(entId);
+            entInfo = command.execute();
             log.info("get ent info from ent service, entInfo={}", entInfo);
 
             // 将数据推送到一个内存队列中

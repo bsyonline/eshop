@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
 /**
  * @author rolex
  * @since 2021
@@ -72,7 +74,10 @@ public class EntInfoController {
             e.printStackTrace();
         }
 
-        return null;
+        return EntInfo.builder()
+                .entId(entId)
+                .modifiedTime(LocalDateTime.MIN)
+                .build();
     }
 
 }

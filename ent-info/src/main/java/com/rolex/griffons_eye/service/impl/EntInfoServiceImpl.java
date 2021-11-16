@@ -39,7 +39,7 @@ public class EntInfoServiceImpl implements EntInfoService {
 
     @Override
     public void removeEntInfoFromRedis(EntInfo entInfo) {
-        String key = PREFIX + entInfo.getId();
+        String key = PREFIX + entInfo.getEntId();
         redisDao.del(key);
     }
 
